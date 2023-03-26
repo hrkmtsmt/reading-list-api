@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserService } from './user.service';
 
@@ -8,8 +16,7 @@ export class UserController {
 
   @Get(':id')
   async findUser(@Param() { id }: { id: User['id'] }) {
-    const { email } = await this.userService.findUser(Number(id));
-    return { email };
+    return this.userService.findUser(Number(id));
   }
 
   @Post()
@@ -23,5 +30,13 @@ export class UserController {
     @Body() { email, password }: Partial<User>,
   ) {
     return this.userService.updateUser({ id: Number(id), email, password });
+  }
+
+  @Delete(':id')
+  async deleteUser(
+    @Param() { id }: { id: User['id'] },
+    @Body() { password }: Partial<User>,
+  ) {
+    return this.userService.deleteUser({ id: Number(id), password });
   }
 }

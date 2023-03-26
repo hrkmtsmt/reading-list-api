@@ -6,10 +6,12 @@ import { User } from '@prisma/client';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findUser(id: User['id']): Promise<User | null> {
-    return this.prisma.user.findUnique({
+  async findUser(id: User['id']) {
+    const { email } = await this.prisma.user.findUnique({
       where: { id },
     });
+
+    return { email };
   }
 
   async createUser({ email, password }: Partial<User>): Promise<User> {
@@ -21,5 +23,25 @@ export class UserService {
       where: { id },
       data: { email, password },
     });
+  }
+
+  async deleteUser({ id, password }: Partial<User>) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (password !== user.password) {
+      return { message: 'パスワードが一致しませんでした。' };
+    }
+
+    try {
+      await this.prisma.user.delete({
+        where: { id },
+      });
+
+      return { message: `${user.email} を削除しました。` };
+    } catch (e) {
+      return { message: 'ユーザーが削除できませんでした。' };
+    }
   }
 }
