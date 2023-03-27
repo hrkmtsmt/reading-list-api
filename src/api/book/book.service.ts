@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Book } from '@prisma/client';
 import { PrismaService } from '@src/prisma/prisma.service';
+import axios from 'axios';
+import parse from 'node-html-parser';
 
 @Injectable()
 export class BookService {
@@ -29,8 +31,12 @@ export class BookService {
       return this.prisma.book.create({ data: { url, userId, title } });
     }
 
+    const { data: html } = await axios.get<string>(url);
+
+    const bookmarkTitle = parse(html).querySelector('title').innerText;
+
     return this.prisma.book.create({
-      data: { url, userId, title: 'Untitled' },
+      data: { url, userId, title: bookmarkTitle },
     });
   }
 }
