@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { BookService } from './book.service';
+import { BookmarkService } from './bookmark.service';
 
-@Controller('books')
-export class BookController {
-  constructor(private readonly bookService: BookService) {}
+@Controller('bookmarks')
+export class BookmarkController {
+  constructor(private readonly bookService: BookmarkService) {}
 
   @Get()
   public async findAllBook(@Query('user_id') userId: string) {
